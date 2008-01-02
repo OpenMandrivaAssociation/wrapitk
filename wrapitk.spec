@@ -32,6 +32,7 @@ BuildRequires:  tcl-devel
 BuildRequires:	doxygen
 BuildRequires:  tetex-latex
 BuildRequires:  texinfo
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 # for upgrade from package with ITK version
 Epoch:          1
 
