@@ -308,9 +308,13 @@ ctest
 rm -rf $RPM_BUILD_ROOT
 
 
+%if %mdkversion < 200900
 %post -n python-itk -p /sbin/ldconfig
+%endif
 
+%if %mdkversion < 200900
 %postun -n python-itk -p /sbin/ldconfig
+%endif
 
 
 %files -n python-itk
