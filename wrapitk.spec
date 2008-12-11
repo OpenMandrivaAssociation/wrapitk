@@ -20,7 +20,7 @@ BuildRequires:  tetex
 BuildRequires:  tetex-latex
 BuildRequires:  tetex-dvips
 BuildRequires:  ghostscript
-BuildRequires:  ImageMagick
+BuildRequires:  imagemagick
 BuildRequires:	vtk-devel >= 5.0
 BuildRequires:	python-vtk-devel >= 5.0
 BuildRequires:  tcl tk
