@@ -4,7 +4,7 @@
 Summary:	Extended language support for ITK
 Name:		wrapitk
 Version:	0.2.1
-Release:	%mkrel 4
+Release:	%mkrel 5
 License:	BSDish
 Group:		Sciences/Other
 URL:		http://voxel.jouy.inra.fr/darcs/contrib-itk/WrapITK
