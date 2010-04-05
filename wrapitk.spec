@@ -1,17 +1,15 @@
 
-%define itkver 2.8
+%define itkver 3.12
 
 Summary:	Extended language support for ITK
 Name:		wrapitk
-Version:	0.2.1
-Release:	%mkrel 5
+Version:	0.3.0
+Release:	%mkrel 1
 License:	BSDish
 Group:		Sciences/Other
-URL:		http://voxel.jouy.inra.fr/darcs/contrib-itk/WrapITK
-Source0:	http://voxel.jouy.inra.fr/darcs/contrib-itk/WrapITK/WrapITK-%{version}.tar.bz2
-# Source0:	http://voxel.jouy.inra.fr/darcs/contrib-itk/WrapITK/WrapITK.tar.bz2
-Patch0:		wrapitk-reconstruction.patch
-BuildRequires:	cmake >= 2.2
+URL:		http://code.google.com/p/wrapitk/
+Source0:	http://wrapitk.googlecode.com/files/wrapitk-0.3.0.tar.bz2
+BuildRequires:	cmake >= 2.4.8
 BuildRequires:	cableswig >= %{itkver}
 BuildRequires:  python-numarray-devel
 BuildRequires:  itk-devel >= %{itkver}
@@ -152,114 +150,70 @@ sponsors).
 
 
 %prep
-
-%setup -q -n WrapITK-%{version}
-# %setup -q -n WrapITK
-
-cd Modules/Morphology/
-%patch0 -p1
+%setup -q
 
 %build
-
-mkdir build
-(
-cd build
-
-cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-      -DWRAP_ITK_INSTALL_PREFIX:PATH=/%{_lib}/InsightToolkit/WrapITK/ \
-      -DCMAKE_CXX_COMPILER:PATH=%{_bindir}/c++ \
-      -DCMAKE_BUILD_TYPE:STRING=Release \
-      -DCMAKE_SKIP_RPATH:BOOL=ON \
-      -DWRAP_ITK_PYTHON:BOOL=ON \
-      -DWRAP_ITK_TCL:BOOL=ON \
-      -DWRAP_ITK_JAVA:BOOL=OFF \
-      -DWRAP_unsigned_char:BOOL=ON \
-      -DDOXYGEN_MAN_PATH:PATH=%{_mandir}/ \
-      ..
-
+%cmake	-DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
+	-DWRAP_ITK_INSTALL_PREFIX:PATH=/%{_lib}/InsightToolkit/WrapITK/ \
+	-DCMAKE_CXX_COMPILER:PATH=%{_bindir}/c++ \
+	-DCMAKE_BUILD_TYPE:STRING=Release \
+	-DCMAKE_SKIP_RPATH:BOOL=ON \
+	-DWRAP_ITK_PYTHON:BOOL=ON \
+	-DWRAP_ITK_TCL:BOOL=ON \
+	-DWRAP_ITK_JAVA:BOOL=OFF \
+	-DWRAP_unsigned_char:BOOL=ON \
+	-DDOXYGEN_MAN_PATH:PATH=%{_mandir}/ \
+	-DITK_DIR:PATH=%{_libdir}/itk-%{itkver}
 %make
-)
 
 export LD_LIBRARY_PATH=`pwd`/build/bin:$LD_LIBRARY_PATH
 export PYTHONPATH=`pwd`/build/Python:`pwd`/Python:$PYTHONPATH
 
 # build the article
-(
-cd article
-make
-)
+pushd article
+    make
+popd
 
 # build the doc
-(
-cd build/Python
-mkdir -p doc
-python make_doxygen_config.py doc
-doxygen doxygen.config
-)
+pushd build/Python
+    mkdir -p doc
+    python make_doxygen_config.py doc
+    doxygen doxygen.config
+popd
 
 # build the external projects
-(
-cd ExternalProjects/PyBuffer/
-mkdir build
-(
-cd build
-
-cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
+pushd ExternalProjects/PyBuffer/
+    %cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
       -DCMAKE_BUILD_TYPE:STRING=Release \
       -DCMAKE_SKIP_RPATH:BOOL=ON \
-      -DWrapITK_DIR:PATH=`pwd`/../../../build \
-      ..
+      -DWrapITK_DIR:PATH=`pwd`/../../../build
+    %make
+popd
 
-%make
-)
-)
-
-(
-cd ExternalProjects/MultiThreaderControl/
-mkdir build
-(
-cd build
-
-cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
+pushd ExternalProjects/MultiThreaderControl
+    %cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
       -DCMAKE_BUILD_TYPE:STRING=Release \
       -DCMAKE_SKIP_RPATH:BOOL=ON \
-      -DWrapITK_DIR:PATH=`pwd`/../../../build \
-      ..
+      -DWrapITK_DIR:PATH=`pwd`/../../../build
+    %make
+popd
 
-%make
-)
-)
-
-(
-cd ExternalProjects/ItkVtkGlue/
-mkdir build
-(
-cd build
-
+pushd ExternalProjects/ItkVtkGlue
 # disable tcl - it doesn't work yet
-
-cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
+    %cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
       -DCMAKE_BUILD_TYPE:STRING=Release \
       -DCMAKE_SKIP_RPATH:BOOL=ON \
       -DWrapITK_DIR:PATH=`pwd`/../../../build \
       -DBUILD_WRAPPERS:BOOL=ON \
       -DVTK_DIR:PATH=%{_libdir}/vtk-5.0 \
-      -DWRAP_ITK_TCL:BOOL=OFF \
-      ..
-
-%make
-)
-)
-
-
+      -DWRAP_ITK_TCL:BOOL=OFF
+    %make
+popd
 
 %install
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
-(
-cd build
-make install DESTDIR=$RPM_BUILD_ROOT
-)
+%makeinstall_std -C build
 
 # workaround not found library
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/ld.so.conf.d/
@@ -279,20 +233,11 @@ export PYTHONPATH=`pwd`/build/Python:`pwd`/Python:$PYTHONPATH
 
 
 # install the external projects
-(
-cd ExternalProjects/PyBuffer/build
-make install DESTDIR=$RPM_BUILD_ROOT
-)
+%makeinstall_std -C ExternalProjects/PyBuffer/build
 
-(
-cd ExternalProjects/MultiThreaderControl/build
-make install DESTDIR=$RPM_BUILD_ROOT
-)
+%makeinstall_std -C ExternalProjects/MultiThreaderControl/build
 
-(
-cd ExternalProjects/ItkVtkGlue/build
-make install DESTDIR=$RPM_BUILD_ROOT
-)
+%makeinstall_std -C ExternalProjects/ItkVtkGlue/build
 
 %check
 
