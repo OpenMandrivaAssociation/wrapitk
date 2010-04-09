@@ -1,5 +1,5 @@
 
-%define itkver 3.12
+%define itkver 3.16
 
 Summary:	Extended language support for ITK
 Name:		wrapitk
@@ -32,7 +32,7 @@ BuildRequires:  tetex-latex
 BuildRequires:  texinfo
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 # for upgrade from package with ITK version
-Epoch:          1
+Epoch:          3
 
 %description
 ITK is an open-source software system to support the Visible Human Project. 
