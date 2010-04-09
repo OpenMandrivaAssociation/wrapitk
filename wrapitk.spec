@@ -1,5 +1,4 @@
-
-%define itkver 3.16
+%define		itkver 3.16
 
 Summary:	Extended language support for ITK
 Name:		wrapitk
@@ -48,14 +47,15 @@ project is from the National Library of Medicine at the National Institutes
 of Health. NLM in turn was supported by member institutions of NIH (see 
 sponsors). 
 
-%package  devel
+#-----------------------------------------------------------------------
+%package	devel
 Summary:	ITK header files for building C++ code
 Group:		Development/C++
 Requires:	cmake >= 2.2
 Requires:	cableswig >= %{itkver}
 Requires:	itk-devel >= %{itkver}
 
-%description devel
+%description	devel
 ITK is an open-source software system to support the Visible Human Project. 
 Currently under active development, ITK employs leading-edge segmentation 
 and registration algorithms in two, three, and more dimensions.
@@ -69,7 +69,15 @@ project is from the National Library of Medicine at the National Institutes
 of Health. NLM in turn was supported by member institutions of NIH (see 
 sponsors). 
 
-%package -n python-itk
+%files		devel
+%defattr(0644,root,root,0755)
+%{_libdir}/InsightToolkit/WrapITK/ClassIndex
+%{_libdir}/InsightToolkit/WrapITK/Configuration
+%{_libdir}/InsightToolkit/WrapITK/WrapITKConfig.cmake
+%{_datadir}/cmake/Modules/FindWrapITK.cmake
+
+#-----------------------------------------------------------------------
+%package	-n python-itk
 Summary:	Python bindings for ITK
 Group:		Development/Python
 Requires:	python
@@ -78,7 +86,7 @@ Requires(pre):	itk >= %{itker}
 Obsoletes:	itk-python
 Provides:	itk-python
 
-%description -n python-itk
+%description	-n python-itk
 ITK is an open-source software system to support the Visible Human Project. 
 Currently under active development, ITK employs leading-edge segmentation 
 and registration algorithms in two, three, and more dimensions.
@@ -92,177 +100,7 @@ project is from the National Library of Medicine at the National Institutes
 of Health. NLM in turn was supported by member institutions of NIH (see 
 sponsors). 
 
-
-%package -n python-itk-numarray
-Summary:	Convert itk buffers to numarray objects
-Group:		Development/Python
-Requires:	python
-Requires:	python-numarray
-Requires:	python-itk = %{epoch}:%{version}
-
-%description -n python-itk-numarray
-Convert itk buffers to numarray objects
-
-
-%package -n python-itkvtk
-Summary:	Convert itk buffers to vtk ones
-Group:		Development/Python
-Requires:	python
-Requires:	python-itk = %{epoch}:%{version}
-
-
-%description -n python-itkvtk
-Convert itk buffers to vtk ones
-
-
-%package -n itkvtk-devel
-Summary:	Convert itk buffers to vtk ones
-Group:		Development/C++
-Requires:	itk-devel
-
-
-%description -n itkvtk-devel
-Convert itk buffers to vtk ones
-
-
-%package -n tcl-itk
-Summary:	Tcl bindings for ITK
-Group:		Development/Python
-Requires:	tcl
-Requires:	itk >= %{itker}
-Requires(pre):	itk >= %{itker}
-Obsoletes:	itk-tcl
-Provides:	itk-tcl
-
-%description -n tcl-itk
-ITK is an open-source software system to support the Visible Human Project. 
-Currently under active development, ITK employs leading-edge segmentation 
-and registration algorithms in two, three, and more dimensions.
-
-The Insight Toolkit was developed by six principal organizations, three 
-commercial (Kitware, GE Corporate R&D, and Insightful) and three academic 
-(UNC Chapel Hill, University of Utah, and University of Pennsylvania). 
-Additional team members include Harvard Brigham & Women's Hospital, 
-University of Pittsburgh, and Columbia University. The funding for the 
-project is from the National Library of Medicine at the National Institutes 
-of Health. NLM in turn was supported by member institutions of NIH (see 
-sponsors). 
-
-
-%prep
-%setup -q
-
-%build
-%cmake	-DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-	-DWRAP_ITK_INSTALL_PREFIX:PATH=/%{_lib}/InsightToolkit/WrapITK/ \
-	-DCMAKE_CXX_COMPILER:PATH=%{_bindir}/c++ \
-	-DCMAKE_BUILD_TYPE:STRING=Release \
-	-DCMAKE_SKIP_RPATH:BOOL=ON \
-	-DWRAP_ITK_PYTHON:BOOL=ON \
-	-DWRAP_ITK_TCL:BOOL=ON \
-	-DWRAP_ITK_JAVA:BOOL=OFF \
-	-DWRAP_unsigned_char:BOOL=ON \
-	-DDOXYGEN_MAN_PATH:PATH=%{_mandir}/ \
-	-DITK_DIR:PATH=%{_libdir}/itk-%{itkver}
-%make
-
-export LD_LIBRARY_PATH=`pwd`/build/bin:$LD_LIBRARY_PATH
-export PYTHONPATH=`pwd`/build/Python:`pwd`/Python:$PYTHONPATH
-
-# build the article
-pushd article
-    make
-popd
-
-# build the doc
-pushd build/Python
-    mkdir -p doc
-    python make_doxygen_config.py doc
-    doxygen doxygen.config
-popd
-
-# build the external projects
-pushd ExternalProjects/PyBuffer/
-    %cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-      -DCMAKE_BUILD_TYPE:STRING=Release \
-      -DCMAKE_SKIP_RPATH:BOOL=ON \
-      -DWrapITK_DIR:PATH=`pwd`/../../../build
-    %make
-popd
-
-pushd ExternalProjects/MultiThreaderControl
-    %cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-      -DCMAKE_BUILD_TYPE:STRING=Release \
-      -DCMAKE_SKIP_RPATH:BOOL=ON \
-      -DWrapITK_DIR:PATH=`pwd`/../../../build
-    %make
-popd
-
-pushd ExternalProjects/ItkVtkGlue
-# disable tcl - it doesn't work yet
-    %cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-      -DCMAKE_BUILD_TYPE:STRING=Release \
-      -DCMAKE_SKIP_RPATH:BOOL=ON \
-      -DWrapITK_DIR:PATH=`pwd`/../../../build \
-      -DBUILD_WRAPPERS:BOOL=ON \
-      -DVTK_DIR:PATH=%{_libdir}/vtk-5.0 \
-      -DWRAP_ITK_TCL:BOOL=OFF
-    %make
-popd
-
-%install
-[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
-
-%makeinstall_std -C build
-
-# workaround not found library
-mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/ld.so.conf.d/
-echo %{_libdir}/InsightToolkit/WrapITK/lib >> $RPM_BUILD_ROOT/%{_sysconfdir}/ld.so.conf.d/python-itk.conf
-
-# install doc
-mkdir -p $RPM_BUILD_ROOT/%{_mandir}
-cp -r build/Python/doc/man3 $RPM_BUILD_ROOT/%{_mandir}
-rm -f $RPM_BUILD_ROOT/%{_mandir}/man3/todo.3
-rm -f $RPM_BUILD_ROOT/%{_mandir}/man3/itkBSplineDecompositionImageFilter.3
-rm -f $RPM_BUILD_ROOT/%{_mandir}/man3/deprecated.3
-rm -f $RPM_BUILD_ROOT/%{_mandir}/man3/BSplineUpsampleImageFilterBase.3
-
-
-export LD_LIBRARY_PATH=`pwd`/build/bin:$LD_LIBRARY_PATH
-export PYTHONPATH=`pwd`/build/Python:`pwd`/Python:$PYTHONPATH
-
-
-# install the external projects
-%makeinstall_std -C ExternalProjects/PyBuffer/build
-
-%makeinstall_std -C ExternalProjects/MultiThreaderControl/build
-
-%makeinstall_std -C ExternalProjects/ItkVtkGlue/build
-
-%check
-
-cd build
-# tcl test are failing without DISPLAY
-ctest -E Tcl
-cd ../ExternalProjects/ItkVtkGlue/build
-ctest
-cd ../../MultiThreaderControl/build
-ctest
-
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-
-%if %mdkversion < 200900
-%post -n python-itk -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -n python-itk -p /sbin/ldconfig
-%endif
-
-
-%files -n python-itk
+%files		-n python-itk
 %defattr(0644,root,root,0755)
 %{_libdir}/InsightToolkit/WrapITK/Python
 %{_libdir}/InsightToolkit/WrapITK/lib/*.py
@@ -283,11 +121,20 @@ rm -rf $RPM_BUILD_ROOT
 %exclude %{_libdir}/InsightToolkit/WrapITK/lib/itkImageToVTKImageFilter.py
 %exclude %{_libdir}/InsightToolkit/WrapITK/lib/itkVTKImageToImageFilter.py
 %exclude %{_libdir}/InsightToolkit/WrapITK/lib/_ItkVtkGluePython.so
-
 %doc article/*.pdf
 
+#-----------------------------------------------------------------------
+%package	-n python-itk-numarray
+Summary:	Convert itk buffers to numarray objects
+Group:		Development/Python
+Requires:	python
+Requires:	python-numarray
+Requires:	python-itk = %{epoch}:%{version}
 
-%files -n python-itk-numarray
+%description	-n python-itk-numarray
+Convert itk buffers to numarray objects
+
+%files		-n python-itk-numarray
 %defattr(0644,root,root,0755)
 %{_libdir}/InsightToolkit/WrapITK/Python/BufferConversion.py
 %{_libdir}/InsightToolkit/WrapITK/Python/Configuration/BufferConversionConfig.py
@@ -295,8 +142,17 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/InsightToolkit/WrapITK/lib/itkPyBuffer.py
 %{_libdir}/InsightToolkit/WrapITK/lib/_BufferConversionPython.so
 
+#-----------------------------------------------------------------------
+%package	-n python-itkvtk
+Summary:	Convert itk buffers to vtk ones
+Group:		Development/Python
+Requires:	python
+Requires:	python-itk = %{epoch}:%{version}
 
-%files -n python-itkvtk
+%description	-n python-itkvtk
+Convert itk buffers to vtk ones
+
+%files		-n python-itkvtk
 %defattr(0644,root,root,0755)
 %{_libdir}/InsightToolkit/WrapITK/Python/ItkVtkGlue.py
 %{_libdir}/InsightToolkit/WrapITK/Python/itkvtk.py
@@ -306,24 +162,160 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/InsightToolkit/WrapITK/lib/itkVTKImageToImageFilter.py
 %{_libdir}/InsightToolkit/WrapITK/lib/_ItkVtkGluePython.so
 
+#-----------------------------------------------------------------------
+%package	-n itkvtk-devel
+Summary:	Convert itk buffers to vtk ones
+Group:		Development/C++
+Requires:	itk-devel
 
-%files -n tcl-itk
+%description	-n itkvtk-devel
+Convert itk buffers to vtk ones
+
+%files		-n itkvtk-devel
+%defattr(0644,root,root,0755)
+%{_includedir}/InsightToolkit/BasicFilters/*
+
+#-----------------------------------------------------------------------
+%package	-n tcl-itk
+Summary:	Tcl bindings for ITK
+Group:		Development/Python
+Requires:	tcl
+Requires:	itk >= %{itker}
+Requires(pre):	itk >= %{itker}
+Obsoletes:	itk-tcl
+Provides:	itk-tcl
+
+%description	-n tcl-itk
+ITK is an open-source software system to support the Visible Human Project. 
+Currently under active development, ITK employs leading-edge segmentation 
+and registration algorithms in two, three, and more dimensions.
+
+The Insight Toolkit was developed by six principal organizations, three 
+commercial (Kitware, GE Corporate R&D, and Insightful) and three academic 
+(UNC Chapel Hill, University of Utah, and University of Pennsylvania). 
+Additional team members include Harvard Brigham & Women's Hospital, 
+University of Pittsburgh, and Columbia University. The funding for the 
+project is from the National Library of Medicine at the National Institutes 
+of Health. NLM in turn was supported by member institutions of NIH (see 
+sponsors). 
+
+%files		-n tcl-itk
 %defattr(0644,root,root,0755)
 %attr(0755,root,root) %{_bindir}/itkwish
 %{_libdir}/InsightToolkit/WrapITK/Tcl
 %{_libdir}/InsightToolkit/WrapITK/bin/itkwish
 %{_libdir}/InsightToolkit/WrapITK/lib/*Tcl.so
 
-%files devel
-%defattr(0644,root,root,0755)
-%{_libdir}/InsightToolkit/WrapITK/ClassIndex
-%{_libdir}/InsightToolkit/WrapITK/Configuration
-%{_libdir}/InsightToolkit/WrapITK/SWIG
-%{_libdir}/InsightToolkit/WrapITK/WrapITKConfig.cmake
-%{_datadir}/CMake/Modules/FindWrapITK.cmake
+#-----------------------------------------------------------------------
+%prep
+%setup -q
 
-%files -n itkvtk-devel
-%defattr(0644,root,root,0755)
-%{_includedir}/InsightToolkit/BasicFilters/*
+#-----------------------------------------------------------------------
+%build
+%cmake	-DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
+	-DWRAP_ITK_INSTALL_PREFIX:PATH=%{_libdir}/InsightToolkit/WrapITK \
+	-DCMAKE_CXX_COMPILER:PATH=%{_bindir}/c++ \
+	-DCMAKE_BUILD_TYPE:STRING=Release \
+	-DCMAKE_SKIP_RPATH:BOOL=ON \
+	-DWRAP_ITK_PYTHON:BOOL=ON \
+	-DWRAP_ITK_TCL:BOOL=ON \
+	-DWRAP_ITK_JAVA:BOOL=OFF \
+	-DWRAP_unsigned_char:BOOL=ON \
+	-DDOXYGEN_MAN_PATH:PATH=%{_mandir}/ \
+	-DITK_DIR:PATH=%{_libdir}/itk-%{itkver}
+%make
 
+export LD_LIBRARY_PATH=`pwd`/build/bin:`pwd`/bin/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=`pwd`/build/Languages/Python:`pwd`/build/lib:$PYTHONPATH
 
+# build the article
+pushd article
+    make
+popd
+
+# build the external projects
+pushd ExternalProjects/PyBuffer/
+    %cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
+	-DWRAP_ITK_INSTALL_PREFIX:PATH=%{_libdir}/InsightToolkit/WrapITK \
+	-DCMAKE_BUILD_TYPE:STRING=Release \
+	-DCMAKE_SKIP_RPATH:BOOL=ON \
+	-DWrapITK_DIR:PATH=`pwd`/../../../build
+    %make
+popd
+
+pushd ExternalProjects/ItkVtkGlue
+# disable tcl - it doesn't work yet
+    %cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
+	-DWRAP_ITK_INSTALL_PREFIX:PATH=%{_libdir}/InsightToolkit/WrapITK \
+	-DCMAKE_BUILD_TYPE:STRING=Release \
+	-DCMAKE_SKIP_RPATH:BOOL=ON \
+	-DWrapITK_DIR:PATH=`pwd`/../../../build \
+	-DBUILD_WRAPPERS:BOOL=ON \
+	-DVTK_DIR:PATH=%{_libdir}/vtk \
+	-DWRAP_ITK_TCL:BOOL=OFF \
+	-DITK_DIR:PATH=%{_libdir}/itk-%{itkver}
+    %make
+popd
+
+#-----------------------------------------------------------------------
+%install
+[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+
+%makeinstall_std -C build
+
+# workaround not found library
+mkdir -p %{buildroot}/%{_sysconfdir}/ld.so.conf.d
+echo %{_libdir}/InsightToolkit/WrapITK/lib >> %{buildroot}/%{_sysconfdir}/ld.so.conf.d/python-itk.conf
+
+# install doc
+mkdir -p %{buildroot}/%{_mandir}
+rm -f %{buildroot}/%{_mandir}/man3/todo.3
+rm -f %{buildroot}/%{_mandir}/man3/itkBSplineDecompositionImageFilter.3
+rm -f %{buildroot}/%{_mandir}/man3/deprecated.3
+rm -f %{buildroot}/%{_mandir}/man3/BSplineUpsampleImageFilterBase.3
+
+export LD_LIBRARY_PATH=`pwd`/build/bin:`pwd`/bin/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=`pwd`/build/Languages/Python:`pwd`/build/lib:$PYTHONPATH
+
+# install the external projects
+%makeinstall_std -C ExternalProjects/PyBuffer/build
+
+%makeinstall_std -C ExternalProjects/ItkVtkGlue/build
+
+mkdir -p %{buildroot}%{_bindir}
+mv -f %{buildroot}%{_libdir}/InsightToolkit/WrapITK/bin/itkwish %{buildroot}%{_bindir}
+rmdir %{buildroot}%{_libdir}/InsightToolkit/WrapITK/bin
+
+#-----------------------------------------------------------------------
+%check
+
+export LD_LIBRARY_PATH=`pwd`/build/bin:`pwd`/bin/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=`pwd`/build/Languages/Python:`pwd`/build/lib:$PYTHONPATH
+
+%if 0
+pushd build
+    # tcl test are failing without DISPLAY
+    ctest -E Tcl
+popd
+%endif
+
+%if 0
+# FIXME
+pushd ExternalProjects/ItkVtkGlue/build
+    ctest
+popd
+%endif
+
+#-----------------------------------------------------------------------
+%clean
+rm -rf %{buildroot}
+
+#-----------------------------------------------------------------------
+%if %mdkversion < 200900
+%post -n python-itk -p /sbin/ldconfig
+%endif
+
+#-----------------------------------------------------------------------
+%if %mdkversion < 200900
+%postun -n python-itk -p /sbin/ldconfig
+%endif
