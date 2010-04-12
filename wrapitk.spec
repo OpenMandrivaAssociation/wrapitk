@@ -212,6 +212,7 @@ sponsors).
 
 #-----------------------------------------------------------------------
 %build
+(
 %cmake	-DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
 	-DWRAP_ITK_INSTALL_PREFIX:PATH=%{_libdir}/InsightToolkit/WrapITK \
 	-DCMAKE_CXX_COMPILER:PATH=%{_bindir}/c++ \
@@ -224,6 +225,7 @@ sponsors).
 	-DDOXYGEN_MAN_PATH:PATH=%{_mandir}/ \
 	-DITK_DIR:PATH=%{_libdir}/itk-%{itkver}
 %make
+)
 
 export LD_LIBRARY_PATH=`pwd`/build/bin:`pwd`/bin/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=`pwd`/build/Languages/Python:`pwd`/build/lib:$PYTHONPATH
@@ -235,16 +237,19 @@ popd
 
 # build the external projects
 pushd ExternalProjects/PyBuffer/
+    (
     %cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
 	-DWRAP_ITK_INSTALL_PREFIX:PATH=%{_libdir}/InsightToolkit/WrapITK \
 	-DCMAKE_BUILD_TYPE:STRING=Release \
 	-DCMAKE_SKIP_RPATH:BOOL=ON \
 	-DWrapITK_DIR:PATH=`pwd`/../../../build
     %make
+    )
 popd
 
 pushd ExternalProjects/ItkVtkGlue
 # disable tcl - it doesn't work yet
+    (
     %cmake -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
 	-DWRAP_ITK_INSTALL_PREFIX:PATH=%{_libdir}/InsightToolkit/WrapITK \
 	-DCMAKE_BUILD_TYPE:STRING=Release \
@@ -255,6 +260,7 @@ pushd ExternalProjects/ItkVtkGlue
 	-DWRAP_ITK_TCL:BOOL=OFF \
 	-DITK_DIR:PATH=%{_libdir}/itk-%{itkver}
     %make
+    )
 popd
 
 #-----------------------------------------------------------------------
