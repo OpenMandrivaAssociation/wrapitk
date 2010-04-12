@@ -71,7 +71,6 @@ sponsors).
 
 %files		devel
 %defattr(0644,root,root,0755)
-%{_libdir}/InsightToolkit/WrapITK/ClassIndex
 %{_libdir}/InsightToolkit/WrapITK/Configuration
 %{_libdir}/InsightToolkit/WrapITK/WrapITKConfig.cmake
 %{_datadir}/cmake/Modules/FindWrapITK.cmake
