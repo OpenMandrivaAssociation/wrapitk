@@ -10,15 +10,12 @@ URL:		http://code.google.com/p/wrapitk/
 Source0:	http://wrapitk.googlecode.com/files/wrapitk-0.3.0.tar.bz2
 BuildRequires:	cmake >= 2.4.8
 BuildRequires:	cableswig >= %{itkver}
-BuildRequires:  python-numarray-devel
-BuildRequires:  itk-devel >= %{itkver}
-BuildRequires:  python-devel
-BuildRequires:  tetex
-BuildRequires:  tetex-latex
-BuildRequires:  tetex-dvips
+BuildRequires:	doxygen
 BuildRequires:  ghostscript
 BuildRequires:  imagemagick
-BuildRequires:	vtk-devel >= 5.0
+BuildRequires:  itk-devel >= %{itkver}
+BuildRequires:  libuuid-devel
+BuildRequires:  python-numarray-devel
 BuildRequires:	python-vtk-devel >= 5.0
 BuildRequires:  tcl tk
 # needed for backport to 2006.0
@@ -26,9 +23,12 @@ BuildRequires:  tcl tk
 BuildRequires:  tk-devel
 BuildRequires:  tcl-devel
 %endif
-BuildRequires:	doxygen
+BuildRequires:  tetex
 BuildRequires:  tetex-latex
+BuildRequires:  tetex-dvips
 BuildRequires:  texinfo
+BuildRequires:	vtk-devel >= 5.0
+%py_requires	-d
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 # for upgrade from package with ITK version
 Epoch:          3
