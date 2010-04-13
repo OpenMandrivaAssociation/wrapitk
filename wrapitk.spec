@@ -10,12 +10,16 @@ URL:		http://code.google.com/p/wrapitk/
 Source0:	http://wrapitk.googlecode.com/files/wrapitk-0.3.0.tar.bz2
 BuildRequires:	cmake >= 2.4.8
 BuildRequires:	cableswig >= %{itkver}
-BuildRequires:	doxygen
-BuildRequires:  ghostscript
-BuildRequires:  imagemagick
+BuildRequires:  python-numarray-devel
 BuildRequires:  itk-devel >= %{itkver}
 BuildRequires:  libuuid-devel
-BuildRequires:  python-numarray-devel
+BuildRequires:  python-devel
+BuildRequires:  tetex
+BuildRequires:  tetex-latex
+BuildRequires:  tetex-dvips
+BuildRequires:  ghostscript
+BuildRequires:  imagemagick
+BuildRequires:	vtk-devel >= 5.0
 BuildRequires:	python-vtk-devel >= 5.0
 BuildRequires:  tcl tk
 # needed for backport to 2006.0
@@ -23,12 +27,9 @@ BuildRequires:  tcl tk
 BuildRequires:  tk-devel
 BuildRequires:  tcl-devel
 %endif
-BuildRequires:  tetex
+BuildRequires:	doxygen
 BuildRequires:  tetex-latex
-BuildRequires:  tetex-dvips
 BuildRequires:  texinfo
-BuildRequires:	vtk-devel >= 5.0
-%py_requires	-d
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 # for upgrade from package with ITK version
 Epoch:          3
@@ -106,19 +107,18 @@ sponsors).
 %{_libdir}/InsightToolkit/WrapITK/lib/*Python.so
 %{_libdir}/python%{pyver}/site-packages/WrapITK.pth
 %{_sysconfdir}/ld.so.conf.d/python-itk.conf
-%{_mandir}/man*/*
 # exclude numarray files
 %exclude %{_libdir}/InsightToolkit/WrapITK/Python/BufferConversion.py
 %exclude %{_libdir}/InsightToolkit/WrapITK/Python/Configuration/BufferConversionConfig.py
 %exclude %{_libdir}/InsightToolkit/WrapITK/lib/BufferConversionPython.py
-%exclude %{_libdir}/InsightToolkit/WrapITK/lib/itkPyBuffer.py
+%exclude %{_libdir}/InsightToolkit/WrapITK/lib/itkPyBufferPython.py
 %exclude %{_libdir}/InsightToolkit/WrapITK/lib/_BufferConversionPython.so
 # exclude itkvtk files
 %exclude %{_libdir}/InsightToolkit/WrapITK/Python/ItkVtkGlue.py
 %exclude %{_libdir}/InsightToolkit/WrapITK/Python/Configuration/ItkVtkGlueConfig.py
 %exclude %{_libdir}/InsightToolkit/WrapITK/lib/ItkVtkGluePython.py
-%exclude %{_libdir}/InsightToolkit/WrapITK/lib/itkImageToVTKImageFilter.py
-%exclude %{_libdir}/InsightToolkit/WrapITK/lib/itkVTKImageToImageFilter.py
+%exclude %{_libdir}/InsightToolkit/WrapITK/lib/itkImageToVTKImageFilterPython.py
+%exclude %{_libdir}/InsightToolkit/WrapITK/lib/itkVTKImageToImageFilterPython.py
 %exclude %{_libdir}/InsightToolkit/WrapITK/lib/_ItkVtkGluePython.so
 %doc article/*.pdf
 
@@ -138,7 +138,7 @@ Convert itk buffers to numarray objects
 %{_libdir}/InsightToolkit/WrapITK/Python/BufferConversion.py
 %{_libdir}/InsightToolkit/WrapITK/Python/Configuration/BufferConversionConfig.py
 %{_libdir}/InsightToolkit/WrapITK/lib/BufferConversionPython.py
-%{_libdir}/InsightToolkit/WrapITK/lib/itkPyBuffer.py
+%{_libdir}/InsightToolkit/WrapITK/lib/itkPyBufferPython.py
 %{_libdir}/InsightToolkit/WrapITK/lib/_BufferConversionPython.so
 
 #-----------------------------------------------------------------------
@@ -157,8 +157,8 @@ Convert itk buffers to vtk ones
 %{_libdir}/InsightToolkit/WrapITK/Python/itkvtk.py
 %{_libdir}/InsightToolkit/WrapITK/Python/Configuration/ItkVtkGlueConfig.py
 %{_libdir}/InsightToolkit/WrapITK/lib/ItkVtkGluePython.py
-%{_libdir}/InsightToolkit/WrapITK/lib/itkImageToVTKImageFilter.py
-%{_libdir}/InsightToolkit/WrapITK/lib/itkVTKImageToImageFilter.py
+%{_libdir}/InsightToolkit/WrapITK/lib/itkImageToVTKImageFilterPython.py
+%{_libdir}/InsightToolkit/WrapITK/lib/itkVTKImageToImageFilterPython.py
 %{_libdir}/InsightToolkit/WrapITK/lib/_ItkVtkGluePython.so
 
 #-----------------------------------------------------------------------
@@ -202,7 +202,6 @@ sponsors).
 %defattr(0644,root,root,0755)
 %attr(0755,root,root) %{_bindir}/itkwish
 %{_libdir}/InsightToolkit/WrapITK/Tcl
-%{_libdir}/InsightToolkit/WrapITK/bin/itkwish
 %{_libdir}/InsightToolkit/WrapITK/lib/*Tcl.so
 
 #-----------------------------------------------------------------------
@@ -271,13 +270,6 @@ popd
 # workaround not found library
 mkdir -p %{buildroot}/%{_sysconfdir}/ld.so.conf.d
 echo %{_libdir}/InsightToolkit/WrapITK/lib >> %{buildroot}/%{_sysconfdir}/ld.so.conf.d/python-itk.conf
-
-# install doc
-mkdir -p %{buildroot}/%{_mandir}
-rm -f %{buildroot}/%{_mandir}/man3/todo.3
-rm -f %{buildroot}/%{_mandir}/man3/itkBSplineDecompositionImageFilter.3
-rm -f %{buildroot}/%{_mandir}/man3/deprecated.3
-rm -f %{buildroot}/%{_mandir}/man3/BSplineUpsampleImageFilterBase.3
 
 export LD_LIBRARY_PATH=`pwd`/build/bin:`pwd`/bin/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=`pwd`/build/Languages/Python:`pwd`/build/lib:$PYTHONPATH
