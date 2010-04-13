@@ -34,6 +34,8 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 # for upgrade from package with ITK version
 Epoch:          3
 
+Patch0:		wrapitk-0.3.0-prefix.patch
+
 %description
 ITK is an open-source software system to support the Visible Human Project. 
 Currently under active development, ITK employs leading-edge segmentation 
@@ -207,6 +209,8 @@ sponsors).
 #-----------------------------------------------------------------------
 %prep
 %setup -q
+
+%patch0 -p1
 
 #-----------------------------------------------------------------------
 %build
