@@ -21,6 +21,7 @@ BuildRequires:  ghostscript
 BuildRequires:  imagemagick
 BuildRequires:	vtk-devel >= 5.0
 BuildRequires:	python-vtk-devel >= 5.0
+BuildRequires:  swig
 BuildRequires:  tcl tk
 # needed for backport to 2006.0
 %if %mdkversion >= 200610
