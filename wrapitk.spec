@@ -1,3 +1,6 @@
+%define		_enable_debug_packages	%{nil}
+%define		debug_package		%{nil}
+
 %define		itkver 3.16
 
 Summary:	Extended language support for ITK
