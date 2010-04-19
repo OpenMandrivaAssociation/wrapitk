@@ -88,8 +88,8 @@ sponsors).
 Summary:	Python bindings for ITK
 Group:		Development/Python
 Requires:	python
-Requires:	itk >= %{itker}
-Requires(pre):	itk >= %{itker}
+Requires:	itk >= %{itkver}
+Requires(pre):	itk >= %{itkver}
 Obsoletes:	itk-python
 Provides:	itk-python
 
@@ -186,8 +186,8 @@ Convert itk buffers to vtk ones
 Summary:	Tcl bindings for ITK
 Group:		Development/Python
 Requires:	tcl
-Requires:	itk >= %{itker}
-Requires(pre):	itk >= %{itker}
+Requires:	itk >= %{itkver}
+Requires(pre):	itk >= %{itkver}
 Obsoletes:	itk-tcl
 Provides:	itk-tcl
 
