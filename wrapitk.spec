@@ -1,12 +1,12 @@
 %define		_enable_debug_packages	%{nil}
 %define		debug_package		%{nil}
 
-%define		itkver 3.16
+%define		itkver 3.20
 
 Summary:	Extended language support for ITK
 Name:		wrapitk
 Version:	0.3.0
-Release:	%mkrel 1
+Release:	%mkrel 2
 License:	BSDish
 Group:		Sciences/Other
 URL:		http://code.google.com/p/wrapitk/
