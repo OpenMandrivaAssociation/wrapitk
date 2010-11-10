@@ -40,6 +40,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Epoch:          3
 
 Patch0:		wrapitk-0.3.0-prefix.patch
+Patch1:		wrapitk-0.3.0-gcc4.5.1.patch
 
 %description
 ITK is an open-source software system to support the Visible Human Project. 
@@ -216,6 +217,7 @@ sponsors).
 %setup -q
 
 %patch0 -p1
+%patch1 -p1
 
 #-----------------------------------------------------------------------
 %build
