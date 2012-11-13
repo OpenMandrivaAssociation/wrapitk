@@ -1,0 +1,12 @@
+diff -p -up wrapitk-0.3.0/Languages/Python/CMakeLists.txt.orig wrapitk-0.3.0/Languages/Python/CMakeLists.txt
+--- wrapitk-0.3.0/Languages/Python/CMakeLists.txt.orig	2010-04-12 21:38:45.090133230 -0300
++++ wrapitk-0.3.0/Languages/Python/CMakeLists.txt	2010-04-12 21:39:23.382342805 -0300
+@@ -219,7 +219,7 @@ ELSE(CMAKE_CONFIGURATION_TYPES)
+ 
+ ENDIF(CMAKE_CONFIGURATION_TYPES)
+ 
+-SET(CONFIG_WRAP_ITK_PYTHON_DIR "${CMAKE_INSTALL_PREFIX}/${WRAP_ITK_INSTALL_PREFIX}/Python")
++SET(CONFIG_WRAP_ITK_PYTHON_DIR "${WRAP_ITK_INSTALL_PREFIX}/Python")
+ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/WrapITK.pth.in"
+             "${CMAKE_CURRENT_BINARY_DIR}/InstallOnly/WrapITK.pth"
+             @ONLY IMMEDIATE)
