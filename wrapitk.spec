@@ -9,7 +9,7 @@ Version:	0.3.0
 Release:	%mkrel 3
 License:	BSDish
 Group:		Sciences/Other
-URL:		http://code.google.com/p/wrapitk/
+URL:		https://code.google.com/p/wrapitk/
 Source0:	http://wrapitk.googlecode.com/files/wrapitk-0.3.0.tar.bz2
 BuildRequires:	cmake >= 2.4.8
 BuildRequires:	cableswig >= %{itkver}
